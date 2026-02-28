@@ -1,36 +1,1640 @@
-# This is a basic workflow to help you get started with Actions
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImmoAchat Pro - Vente immobilière</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-name: CI
+        body {
+            background-color: #f5f5f5;
+        }
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+        /* En-tête */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+        nav a:hover {
+            color: #e67e22;
+        }
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-login, .btn-register {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-login {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-login:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        .btn-register {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        .btn-register:hover {
+            background-color: #d35400;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background-color: #e67e22;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            color: white;
+            border: 1px solid #e74c3c;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #e74c3c;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Barre de recherche avancée */
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-section h2 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-form input, .search-form select {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-form button {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .search-form button:hover {
+            background-color: #d35400;
+        }
+
+        .advanced-filters {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .advanced-filters.show {
+            display: block;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .filter-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-toggle-filters {
+            background: none;
+            border: none;
+            color: #e67e22;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        /* Barre d'outils */
+        .tools-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background-color: #e67e22;
+            color: white;
+            border-color: #e67e22;
+        }
+
+        .sort-select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .favorites-count, .compare-count {
+            background-color: #e67e22;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Grille de biens */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .properties-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .properties-grid.list-view .property-card {
+            display: flex;
+            height: 250px;
+        }
+
+        .properties-grid.list-view .property-image {
+            width: 300px;
+            height: 100%;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .property-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #e67e22;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1;
+        }
+
+        .property-badge.vip {
+            background-color: gold;
+            color: #2c3e50;
+        }
+
+        .property-badge.new {
+            background-color: #27ae60;
+        }
+
+        .property-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        .favorite-btn.active {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .compare-checkbox {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1;
+        }
+
+        .property-info {
+            padding: 1.5rem;
+        }
+
+        .property-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .property-location {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e67e22;
+            margin: 1rem 0;
+        }
+
+        .property-price::after {
+            content: " €";
+        }
+
+        .property-details {
+            display: flex;
+            gap: 1rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .property-details span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .property-rating {
+            color: #f1c40f;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-buy {
+            flex: 2;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-buy:hover {
+            background-color: #219a52;
+        }
+
+        .btn-contact {
+            flex: 1;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-contact:hover {
+            background-color: #2980b9;
+        }
+
+        /* Modal d'achat */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-xl {
+            max-width: 900px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            background: none;
+            border: none;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .modal .property-summary {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #219a52;
+        }
+
+        /* Tableau de comparaison */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .compare-table th, .compare-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .compare-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .compare-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Section avis */
+        .reviews-section {
+            margin-top: 2rem;
+        }
+
+        .review-card {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-author {
+            font-weight: bold;
+        }
+
+        .review-rating {
+            color: #f1c40f;
+        }
+
+        .review-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: #27ae60;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        .notification.info {
+            background-color: #3498db;
+        }
+
+        /* Pied de page */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="showHome()">🏠 ImmoAchat Pro</div>
+        <nav>
+            <ul>
+                <li><a onclick="showHome()">Accueil</a></li>
+                <li><a onclick="showFavorites()">Favoris <span class="favorites-count" id="favoritesCount">0</span></a></li>
+                <li><a onclick="showCompare()">Comparateur <span class="compare-count" id="compareCount">0</span></a></li>
+                <li><a onclick="showContact()">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-section" id="userSection">
+            <button class="btn-login" onclick="showLoginModal()">Connexion</button>
+            <button class="btn-register" onclick="showRegisterModal()">Inscription</button>
+        </div>
+    </header>
+
+    <main class="container" id="mainContent">
+        <!-- Le contenu sera chargé dynamiquement -->
+    </main>
+
+    <!-- Modal de connexion -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Connexion</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal d'inscription -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h2>Inscription</h2>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registerFirstName">Prénom</label>
+                        <input type="text" id="registerFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerLastName">Nom</label>
+                        <input type="text" id="registerLastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Téléphone</label>
+                    <input type="tel" id="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmer le mot de passe</label>
+                    <input type="password" id="registerConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">S'inscrire</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal d'achat -->
+    <div class="modal" id="buyModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('buyModal')">&times;</button>
+            <h2>Formulaire d'achat</h2>
+            <div class="property-summary" id="modalPropertySummary"></div>
+            <form id="buyForm" onsubmit="submitPurchase(event)">
+                <div class="form-group">
+                    <label for="fullName">Nom complet *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Téléphone *</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="financing">Type de financement</label>
+                    <select id="financing">
+                        <option value="cash">Comptant</option>
+                        <option value="mortgage">Prêt immobilier</option>
+                        <option value="mixed">Mixte</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="visitDate">Date de visite souhaitée</label>
+                    <input type="date" id="visitDate">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message (optionnel)</label>
+                    <textarea id="message" placeholder="Dites-nous en plus sur votre projet..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Envoyer la demande d'achat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de contact -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('contactModal')">&times;</button>
+            <h2>Contacter l'agent</h2>
+            <div class="property-summary" id="contactPropertySummary"></div>
+            <form id="contactForm" onsubmit="submitContact(event)">
+                <div class="form-group">
+                    <label for="contactName">Votre nom *</label>
+                    <input type="text" id="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Votre email *</label>
+                    <input type="email" id="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactPhone">Votre téléphone</label>
+                    <input type="tel" id="contactPhone">
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message *</label>
+                    <textarea id="contactMessage" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Envoyer le message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de comparaison -->
+    <div class="modal" id="compareModal">
+        <div class="modal-content modal-xl">
+            <button class="modal-close" onclick="closeModal('compareModal')">&times;</button>
+            <h2>Comparateur de biens</h2>
+            <div id="compareContent"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <footer>
+        <p>&copy; 2024 ImmoAchat Pro - Tous droits réservés</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <a href="#" style="color: white; text-decoration: none;">Mentions légales</a> | 
+            <a href="#" style="color: white; text-decoration: none;">CGV</a> | 
+            <a href="#" style="color: white; text-decoration: none;">Politique de confidentialité</a>
+        </p>
+    </footer>
+
+    <script>
+        // Données simulées des biens immobiliers
+        const properties = [
+            {
+                id: 1,
+                title: "Appartement moderne avec terrasse",
+                location: "Paris 11ème",
+                address: "15 rue de la Roquette, 75011 Paris",
+                price: 350000,
+                type: "appartement",
+                rooms: 3,
+                bedrooms: 2,
+                bathrooms: 1,
+                surface: 65,
+                floor: 4,
+                totalFloors: 7,
+                yearBuilt: 2018,
+                energyClass: "B",
+                greenhouseClass: "A",
+                description: "Superbe appartement récent avec terrasse orientée sud. Proche commodités et métro.",
+                features: ["Terrasse", "Ascenseur", "Parking", "Cuisine équipée", "Double vitrage"],
+                images: ["🏢", "🏢", "🏢"],
+                rating: 4.5,
+                reviews: 12,
+                agent: "Marie Dupont",
+                agentPhone: "01 23 45 67 89",
+                agentEmail: "m.dupont@immoachat.fr",
+                badge: "new"
+            },
+            {
+                id: 2,
+                title: "Maison de standing avec piscine",
+                location: "Lyon 6ème",
+                address: "8 avenue des Brotteaux, 69006 Lyon",
+                price: 520000,
+                type: "maison",
+                rooms: 5,
+                bedrooms: 4,
+                bathrooms: 2,
+                surface: 120,
+                landSurface: 300,
+                yearBuilt: 2015,
+                energyClass: "C",
+                greenhouseClass: "B",
+                description: "Magnifique maison contemporaine avec jardin et piscine. Quartier résidentiel calme.",
+                features: ["Piscine", "Jardin", "Garage", "Cave", "Alarme"],
+                images: ["🏡", "🏡", "🏡"],
+                rating: 5,
+                reviews: 8,
+                agent: "Pierre Martin",
+                agentPhone: "04 78 90 12 34",
+                agentEmail: "p.martin@immoachat.fr",
+                badge: "vip"
+            },
+            {
+                id: 3,
+                title: "Studio centre-ville rénové",
+                location: "Bordeaux",
+                address: "23 rue Sainte-Catherine, 33000 Bordeaux",
+                price: 180000,
+                type: "appartement",
+                rooms: 1,
+                bedrooms: 1,
+                bathrooms: 1,
+                surface: 28,
+                floor: 2,
+                totalFloors: 4,
+                yearBuilt: 1930,
+                energyClass: "D",
+                greenhouseClass: "D",
+                description: "Studio entièrement rénové en plein centre. Idéal investissement ou premier achat.",
+                features: ["Rénové", "Proche commerces", "Transport", "Interphone"],
+                images: ["🏠", "🏠", "🏠"],
+                rating: 4,
+                reviews: 5,
+                agent: "Sophie Bernard",
+                agentPhone: "05 56 78 90 12",
+                agentEmail: "s.bernard@immoachat.fr",
+                badge: "new"
+            },
+            {
+                id: 4,
+                title: "Duplex de luxe vue mer",
+                location: "Nice",
+                address: "45 promenade des Anglais, 06000 Nice",
+                price: 650000,
+                type: "appartement",
+                rooms: 4,
+                bedrooms: 3,
+                bathrooms: 2,
+                surface: 90,
+                floor: 6,
+                totalFloors: 8,
+                yearBuilt: 2020,
+                energyClass: "A",
+                greenhouseClass: "A",
+                description: "Exceptionnel duplex avec vue mer panoramique. Prestations haut de gamme.",
+                features: ["Vue mer", "Terrasse", "Ascenseur", "Parking", "Climatisation"],
+                images: ["🏢", "🏢", "🏢"],
+                rating: 5,
+                reviews: 15,
+                agent: "Jean-Claude Dubois",
+                agentPhone: "04 93 12 34 56",
+                agentEmail: "jc.dubois@immoachat.fr",
+                badge: "vip"
+            },
+            {
+                id: 5,
+                title: "Villa contemporaine avec jardin",
+                location: "Toulouse",
+                address: "12 allées Jean Jaurès, 31000 Toulouse",
+                price: 750000,
+                type: "maison",
+                rooms: 6,
+                bedrooms: 5,
+                bathrooms: 3,
+                surface: 180,
+                landSurface: 500,
+                yearBuilt: 2019,
+                energyClass: "B",
+                greenhouseClass: "B",
+                description: "Superbe villa moderne avec grand jardin. Prestations de qualité, proche écoles et commerces.",
+                features: ["Jardin", "Garage", "Cave", "Terrasse", "Cuisine américaine"],
+                images: ["🏡", "🏡", "🏡"],
+                rating: 4.5,
+                reviews: 10,
+                agent: "Isabelle Petit",
+                agentPhone: "05 61 23 45 67",
+                agentEmail: "i.petit@immoachat.fr",
+                badge: "new"
+            },
+            {
+                id: 6,
+                title: "Appartement haussmannien",
+                location: "Paris 16ème",
+                address: "34 avenue Victor Hugo, 75116 Paris",
+                price: 890000,
+                type: "appartement",
+                rooms: 4,
+                bedrooms: 3,
+                bathrooms: 2,
+                surface: 110,
+                floor: 3,
+                totalFloors: 6,
+                yearBuilt: 1900,
+                energyClass: "E",
+                greenhouseClass: "D",
+                description: "Magnifique appartement haussmannien avec moulures, parquet et cheminée. Vue dégagée.",
+                features: ["Cheminée", "Moulures", "Parquet", "Cave", "Garde-meuble"],
+                images: ["🏢", "🏢", "🏢"],
+                rating: 4,
+                reviews: 7,
+                agent: "Marie Dupont",
+                agentPhone: "01 23 45 67 89",
+                agentEmail: "m.dupont@immoachat.fr",
+                badge: ""
+            }
+        ];
+
+        // Données des avis
+        const reviews = {
+            1: [
+                { author: "Jean D.", rating: 5, comment: "Excellent appartement, très bien situé !", date: "2024-02-15" },
+                { author: "Marie L.", rating: 4, comment: "Bien mais un peu bruyant le soir", date: "2024-02-10" }
+            ],
+            2: [
+                { author: "Paul B.", rating: 5, comment: "Maison magnifique, piscine superbe", date: "2024-02-20" },
+                { author: "Sophie M.", rating: 5, comment: "Quartier calme, maison parfaite", date: "2024-02-18" }
+            ]
+        };
+
+        // État de l'application
+        let currentUser = null;
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let compareList = JSON.parse(localStorage.getItem('compareList')) || [];
+        let currentProperty = null;
+        let currentView = 'grid';
+        let currentSort = 'default';
+
+        // Initialisation
+        window.onload = function() {
+            checkAuthStatus();
+            showHome();
+            updateFavoritesCount();
+            updateCompareCount();
+        };
+
+        // Navigation
+        function showHome() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = getHomeHTML();
+            displayProperties(properties);
+        }
+
+        function showFavorites() {
+            if (!currentUser) {
+                showNotification('Veuillez vous connecter pour voir vos favoris', 'error');
+                showLoginModal();
+                return;
+            }
+            const content = document.getElementById('mainContent');
+            const favoriteProperties = properties.filter(p => favorites.includes(p.id));
+            content.innerHTML = getFavoritesHTML();
+            displayProperties(favoriteProperties);
+        }
+
+        function showCompare() {
+            const content = document.getElementById('mainContent');
+            if (compareList.length === 0) {
+                content.innerHTML = '<div style="text-align: center; padding: 3rem;"><h3>Aucun bien à comparer</h3><p>Sélectionnez des biens avec la case "Comparer"</p></div>';
+                return;
+            }
+            const compareProperties = properties.filter(p => compareList.includes(p.id));
+            openCompareModal(compareProperties);
+        }
+
+        function showContact() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = getContactPageHTML();
+        }
+
+        function showHome() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = getHomeHTML();
+            displayProperties(properties);
+        }
+
+        function getHomeHTML() {
+            return `
+                <section class="search-section">
+                    <h2>Trouvez votre bien immobilier</h2>
+                    <div class="search-form">
+                        <input type="text" placeholder="Ville, quartier..." id="searchLocation">
+                        <select id="searchType">
+                            <option value="">Type de bien</option>
+                            <option value="appartement">Appartement</option>
+                            <option value="maison">Maison</option>
+                        </select>
+                        <input type="number" placeholder="Budget max (€)" id="searchBudget">
+                        <button onclick="searchProperties()">Rechercher</button>
+                    </div>
+                    <button class="btn-toggle-filters" onclick="toggleAdvancedFilters()">▼ Filtres avancés</button>
+                    <div class="advanced-filters" id="advancedFilters">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label>Pièces min.</label>
+                                <input type="number" id="filterRooms" min="1">
+                            </div>
+                            <div class="filter-group">
+                                <label>Surface min. (m²)</label>
+                                <input type="number" id="filterSurface" min="1">
+                            </div>
+                            <div class="filter-group">
+                                <label>Énergie</label>
+                                <select id="filterEnergy">
+                                    <option value="">Toutes</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="tools-bar">
+                    <div class="view-options">
+                        <button class="view-btn ${currentView === 'grid' ? 'active' : ''}" onclick="changeView('grid')">Grille</button>
+                        <button class="view-btn ${currentView === 'list' ? 'active' : ''}" onclick="changeView('list')">Liste</button>
+                    </div>
+                    <select class="sort-select" onchange="sortProperties(this.value)">
+                        <option value="default">Trier par</option>
+                        <option value="priceAsc">Prix croissant</option>
+                        <option value="priceDesc">Prix décroissant</option>
+                        <option value="surfaceAsc">Surface croissante</option>
+                        <option value="surfaceDesc">Surface décroissante</option>
+                        <option value="rating">Meilleurs avis</option>
+                    </select>
+                </div>
+
+                <h2 style="color: #2c3e50;">Biens disponibles (${properties.length})</h2>
+                <div class="properties-grid ${currentView === 'list' ? 'list-view' : ''}" id="propertiesGrid"></div>
+            `;
+        }
+
+        function getFavoritesHTML() {
+            return `
+                <h2 style="color: #2c3e50; margin-bottom: 2rem;">Mes favoris</h2>
+                <div class="properties-grid ${currentView === 'list' ? 'list-view' : ''}" id="propertiesGrid"></div>
+            `;
+        }
+
+        function getContactPageHTML() {
+            return `
+                <section class="search-section">
+                    <h2>Contactez-nous</h2>
+                    <form onsubmit="submitContactForm(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom *</label>
+                                <input type="text" id="contactName2" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="contactEmail2" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" id="contactPhone2">
+                        </div>
+                        <div class="form-group">
+                            <label>Sujet *</label>
+                            <select id="contactSubject" required>
+                                <option value="">Choisissez un sujet</option>
+                                <option value="info">Demande d'information</option>
+                                <option value="visit">Planifier une visite</option>
+                                <option value="estimate">Estimation de bien</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Message *</label>
+                            <textarea id="contactMessage2" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Envoyer</button>
+                    </form>
+                </section>
+
+                <section style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                    <div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📍</div>
+                        <h3>Adresse</h3>
+                        <p>123 rue de l'Immobilier<br>75001 Paris</p>
+                    </div>
+                    <div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📞</div>
+                        <h3>Téléphone</h3>
+                        <p>01 23 45 67 89<br>Lun-Ven 9h-18h</p>
+                    </div>
+                    <div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">✉️</div>
+                        <h3>Email</h3>
+                        <p>contact@immoachat.fr<br>Réponse sous 24h</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        // Affichage des propriétés
+        function displayProperties(props) {
+            const grid = document.getElementById('propertiesGrid');
+            if (!grid) return;
+
+            if (props.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aucun bien trouvé</p>';
+                return;
+            }
+
+            grid.innerHTML = props.map(prop => {
+                const isFavorite = favorites.includes(prop.id);
+                const isCompare = compareList.includes(prop.id);
+                const badgeClass = prop.badge === 'vip' ? 'vip' : prop.badge === 'new' ? 'new' : '';
+                const badgeText = prop.badge === 'vip' ? 'VIP' : prop.badge === 'new' ? 'NOUVEAU' : '';
+
+                return `
+                    <div class="property-card" onclick="event.stopPropagation()">
+                        ${badgeText ? `<div class="property-badge ${badgeClass}">${badgeText}</div>` : ''}
+                        <div class="property-image">
+                            ${prop.images[0]}
+                            <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${prop.id}, event)">
+                                ${isFavorite ? '❤️' : '🤍'}
+                            </button>
+                            <div class="compare-checkbox">
+                                <label>
+                                    <input type="checkbox" ${isCompare ? 'checked' : ''} onchange="toggleCompare(${prop.id}, this.checked)"> Comparer
+                                </label>
+                            </div>
+                        </div>
+                        <div class="property-info">
+                            <div class="property-title">${prop.title}</div>
+                            <div class="property-location">📍 ${prop.location}</div>
+                            <div class="property-rating">${'★'.repeat(Math.floor(prop.rating))}${prop.rating % 1 ? '½' : ''} (${prop.reviews} avis)</div>
+                            <div class="property-price">${prop.price.toLocaleString()}</div>
+                            <div class="property-details">
+                                <span>🛏️ ${prop.rooms} pièce${prop.rooms > 1 ? 's' : ''}</span>
+                                <span>🛌 ${prop.bedrooms} chambre${prop.bedrooms > 1 ? 's' : ''}</span>
+                                <span>📏 ${prop.surface} m²</span>
+                            </div>
+                            <div class="property-actions">
+                                <button class="btn-buy" onclick="openBuyModal(${prop.id}, event)">Acheter</button>
+                                <button class="btn-contact" onclick="openContactModal(${prop.id}, event)">📞</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Fonctions de recherche et filtres
+        function toggleAdvancedFilters() {
+            document.getElementById('advancedFilters').classList.toggle('show');
+        }
+
+        function searchProperties() {
+            const location = document.getElementById('searchLocation')?.value.toLowerCase() || '';
+            const type = document.getElementById('searchType')?.value || '';
+            const budget = document.getElementById('searchBudget')?.value || '';
+            const rooms = document.getElementById('filterRooms')?.value || '';
+            const surface = document.getElementById('filterSurface')?.value || '';
+            const energy = document.getElementById('filterEnergy')?.value || '';
+
+            const filtered = properties.filter(prop => {
+                const matchLocation = !location || prop.location.toLowerCase().includes(location);
+                const matchType = !type || prop.type === type;
+                const matchBudget = !budget || prop.price <= parseInt(budget);
+                const matchRooms = !rooms || prop.rooms >= parseInt(rooms);
+                const matchSurface = !surface || prop.surface >= parseInt(surface);
+                const matchEnergy = !energy || prop.energyClass === energy;
+                
+                return matchLocation && matchType && matchBudget && matchRooms && matchSurface && matchEnergy;
+            });
+
+            displayProperties(filtered);
+            showNotification(`${filtered.length} bien(s) trouvé(s)`, 'info');
+        }
+
+        function changeView(view) {
+            currentView = view;
+            showHome();
+        }
+
+        function sortProperties(criteria) {
+            currentSort = criteria;
+            let sorted = [...properties];
+            
+            switch(criteria) {
+                case 'priceAsc':
+                    sorted.sort((a, b) => a.price - b.price);
+                    break;
+                case 'priceDesc':
+                    sorted.sort((a, b) => b.price - a.price);
+                    break;
+                case 'surfaceAsc':
+                    sorted.sort((a, b) => a.surface - b.surface);
+                    break;
+                case 'surfaceDesc':
+                    sorted.sort((a, b) => b.surface - a.surface);
+                    break;
+                case 'rating':
+                    sorted.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+            
+            displayProperties(sorted);
+        }
+
+        // Gestion des favoris
+        function toggleFavorite(propertyId, event) {
+            event.stopPropagation();
+            
+            if (!currentUser) {
+                showNotification('Veuillez vous connecter pour ajouter aux favoris', 'error');
+                showLoginModal();
+                return;
+            }
+
+            const index = favorites.indexOf(propertyId);
+            if (index === -1) {
+                favorites.push(propertyId);
+                showNotification('Ajouté aux favoris', 'success');
+            } else {
+                favorites.splice(index, 1);
+                showNotification('Retiré des favoris', 'info');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesCount();
+            
+            // Mettre à jour l'affichage
+            if (document.getElementById('propertiesGrid')) {
+                const btn = event.target;
+                btn.classList.toggle('active');
+                btn.innerHTML = btn.classList.contains('active') ? '❤️' : '🤍';
+            }
+        }
+
+        function updateFavoritesCount() {
+            document.getElementById('favoritesCount').textContent = favorites.length;
+        }
+
+        // Gestion de la comparaison
+        function toggleCompare(propertyId, checked) {
+            if (checked) {
+                if (compareList.length >= 3) {
+                    showNotification('Vous ne pouvez comparer que 3 biens maximum', 'error');
+                    event.target.checked = false;
+                    return;
+                }
+                compareList.push(propertyId);
+                showNotification('Ajouté à la comparaison', 'success');
+            } else {
+                compareList = compareList.filter(id => id !== propertyId);
+                showNotification('Retiré de la comparaison', 'info');
+            }
+            
+            localStorage.setItem('compareList', JSON.stringify(compareList));
+            updateCompareCount();
+        }
+
+        function updateCompareCount() {
+            document.getElementById('compareCount').textContent = compareList.length;
+        }
+
+        function openCompareModal(properties) {
+            const modal = document.getElementById('compareModal');
+            const content = document.getElementById('compareContent');
+            
+            content.innerHTML = `
+                <table class="compare-table">
+                    <tr>
+                        <th>Caractéristique</th>
+                        ${properties.map(p => `<th>${p.title}</th>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Prix</td>
+                        ${properties.map(p => `<td>${p.price.toLocaleString()} €</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Localisation</td>
+                        ${properties.map(p => `<td>${p.location}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Surface</td>
+                        ${properties.map(p => `<td>${p.surface} m²</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Pièces</td>
+                        ${properties.map(p => `<td>${p.rooms}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Chambres</td>
+                        ${properties.map(p => `<td>${p.bedrooms}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Salles de bain</td>
+                        ${properties.map(p => `<td>${p.bathrooms}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Classe énergie</td>
+                        ${properties.map(p => `<td>${p.energyClass}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Classe GES</td>
+                        ${properties.map(p => `<td>${p.greenhouseClass}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Année construction</td>
+                        ${properties.map(p => `<td>${p.yearBuilt}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Équipements</td>
+                        ${properties.map(p => `<td>${p.features.slice(0, 3).join(', ')}${p.features.length > 3 ? '...' : ''}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td>Note</td>
+                        ${properties.map(p => `<td>${p.rating}/5 (${p.reviews} avis)</td>`).join('')}
+                    </tr>
+                </table>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        // Modals d'achat et contact
+        function openBuyModal(propertyId, event) {
+            if (event) event.stopPropagation();
+            
+            if (!currentUser) {
+                showNotification('Veuillez vous connecter pour acheter', 'error');
+                showLoginModal();
+                return;
+            }
+
+            currentProperty = properties.find(p => p.id === propertyId);
+            if (!currentProperty) return;
+
+            const summary = document.getElementById('modalPropertySummary');
+            summary.innerHTML = `
+                <strong>${currentProperty.title}</strong><br>
+                ${currentProperty.location}<br>
+                Prix: ${currentProperty.price.toLocaleString()} €<br>
+                ${currentProperty.rooms} pièces - ${currentProperty.surface} m²<br>
+                Agent: ${currentProperty.agent}
+            `;
+
+            // Pré-remplir avec les infos utilisateur
+            if (currentUser) {
+                document.getElementById('fullName').value = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('email').value = currentUser.email;
+                document.getElementById('phone').value = currentUser.phone || '';
+            }
+
+            document.getElementById('buyModal').classList.add('active');
+        }
+
+        function openContactModal(propertyId, event) {
+            if (event) event.stopPropagation();
+            
+            currentProperty = properties.find(p => p.id === propertyId);
+            if (!currentProperty) return;
+
+            const summary = document.getElementById('contactPropertySummary');
+            summary.innerHTML = `
+                <strong>${currentProperty.title}</strong><br>
+                ${currentProperty.location}<br>
+                Agent: ${currentProperty.agent}
+            `;
+
+            // Pré-remplir avec les infos utilisateur
+            if (currentUser) {
+                document.getElementById('contactName').value = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('contactEmail').value = currentUser.email;
+                document.getElementById('contactPhone').value = currentUser.phone || '';
+            }
+
+            document.getElementById('contactModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Soumission des formulaires
+        function submitPurchase(event) {
+            event.preventDefault();
+
+            const formData = {
+                property: currentProperty.title,
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                financing: document.getElementById('financing').value,
+                visitDate: document.getElementById('visitDate').value,
+                message: document.getElementById('message').value,
+                userId: currentUser?.id || null
+            };
+
+            console.log('Demande d\'achat:', formData);
+            
+            showNotification('Demande envoyée ! Un conseiller vous contactera sous 24h.', 'success');
+            closeModal('buyModal');
+        }
+
+        function submitContact(event) {
+            event.preventDefault();
+
+            const formData = {
+                property: currentProperty.title,
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
+                message: document.getElementById('contactMessage').value,
+                userId: currentUser?.id || null
+            };
+
+            console.log('Message de contact:', formData);
+            
+            showNotification('Message envoyé ! L\'agent vous répondra rapidement.', 'success');
+            closeModal('contactModal');
+        }
+
+        function submitContactForm(event) {
+            event.preventDefault();
+
+            const formData = {
+                name: document.getElementById('contactName2').value,
+                email: document.getElementById('contactEmail2').value,
+                phone: document.getElementById('contactPhone2').value,
+                subject: document.getElementById('contactSubject').value,
+                message: document.getElementById('contactMessage2').value
+            };
+
+            console.log('Formulaire de contact:', formData);
+            
+            showNotification('Message envoyé ! Nous vous répondrons dans les plus brefs délais.', 'success');
+            event.target.reset();
+        }
+
+        // Authentification
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function showRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Simulation de connexion
+            currentUser = {
+                id: 1,
+                email: email,
+                firstName: 'Jean',
+                lastName: 'Dupont',
+                phone: '06 12 34 56 78'
+            };
+
+            updateUserInterface();
+            closeModal('loginModal');
+            showNotification('Connexion réussie !', 'success');
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showNotification('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            // Simulation d'inscription
+            currentUser = {
+                id: Date.now(),
+                firstName: document.getElementById('registerFirstName').value,
+                lastName: document.getElementById('registerLastName').value,
+                email: document.getElementById('registerEmail').value,
+                phone: document.getElementById('registerPhone').value
+            };
+
+            updateUserInterface();
+            closeModal('registerModal');
+            showNotification('Inscription réussie !', 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            favorites = [];
+            compareList = [];
+            localStorage.clear();
+            updateUserInterface();
+            showHome();
+            showNotification('Déconnexion réussie', 'info');
+        }
+
+        function checkAuthStatus() {
+            // Vérifier si un utilisateur est déjà connecté (simulation)
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserInterface();
+            }
+        }
+
+        function updateUserInterface() {
+            const userSection = document.getElementById('userSection');
+            
+            if (currentUser) {
+                userSection.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${currentUser.firstName[0]}${currentUser.lastName[0]}</div>
+                        <span>${currentUser.firstName} ${currentUser.lastName}</span>
+                        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+                    </div>
+                `;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+            } else {
+                userSection.innerHTML = `
+                    <button class="btn-login" onclick="showLoginModal()">Connexion</button>
+                    <button class="btn-register" onclick="showRegisterModal()">Inscription</button>
+                `;
+                localStorage.removeItem('user');
+            }
+            
+            updateFavoritesCount();
+            updateCompareCount();
+        }
+
+        // Notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fermeture des modals en cliquant dehors
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        };
+    </script>
+</body>
+</html>
